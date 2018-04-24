@@ -17,11 +17,12 @@ GeneticAlgorithm.prototype = {
     // resets genetic algorithm parameters
     reset: function() {
         this.iteration = 1; // current iteration number (it is equal to the current population number)
-        this.mutateRate = 1; // initial mutation rate
+        this.mutateRate = 0.2; // initial mutation rate
 
         this.best_population = 0; // the population number of the best unit
         this.best_fitness = 0; // the fitness of the best unit
         this.best_score = 0; // the score of the best unit ever
+        this.count = 0;
     },
 
     // creates a new population
@@ -39,6 +40,7 @@ GeneticAlgorithm.prototype = {
             newUnit.fitness = 0;
             newUnit.score = 0;
             newUnit.isWinner = false;
+            newUnit.birdId = this.count++;
 
             // add the new unit to the population 
             this.Population.push(newUnit);
@@ -48,8 +50,6 @@ GeneticAlgorithm.prototype = {
     // activates the neural network of an unit from the population 
     // to calculate an output action according to the inputs
     activateBrain: function(bird, target) {
-        console.log(b = bird);
-        console.log(t = target);
         // input 1: the horizontal distance between the bird and the target
         var targetDeltaX = this.normalize(target.x, 700) * this.SCALE_FACTOR;
 
@@ -72,13 +72,11 @@ GeneticAlgorithm.prototype = {
         // (they will be copied to the next population)
         var Winners = this.selection();
 
-        if (this.mutateRate == 1 && Winners[0].fitness < 0) {
+        if (Winners[0].fitness < 0) {
             // If the best unit from the initial population has a negative fitness 
             // then it means there is no any bird which reached the first barrier!
             // Playing as the God, we can destroy this bad population and try with another one.
             this.createPopulation();
-        } else {
-            this.mutateRate = 0.2; // else set the mutatation rate to the real value
         }
 
         // fill the rest of the next population with new units using crossover and mutation
@@ -111,6 +109,7 @@ GeneticAlgorithm.prototype = {
             newUnit.fitness = 0;
             newUnit.score = 0;
             newUnit.isWinner = false;
+            newUnit.birdId = this.count++;
 
             // update population by changing the old unit with the new one
             this.Population[i] = newUnit;
@@ -166,21 +165,21 @@ GeneticAlgorithm.prototype = {
     mutation: function(offspring) {
         // mutate some 'bias' information of the offspring neurons
         for (var i = 0; i < offspring.neurons.length; i++) {
-            offspring.neurons[i]['bias'] = this.mutate(offspring.neurons[i]['bias']);
+            offspring.neurons[i]['bias'] = this.mutate(offspring.neurons[i]['bias'], 1);
         }
 
         // mutate some 'weights' information of the offspring connections
         for (var i = 0; i < offspring.connections.length; i++) {
-            offspring.connections[i]['weight'] = this.mutate(offspring.connections[i]['weight']);
+            offspring.connections[i]['weight'] = this.mutate(offspring.connections[i]['weight'], 2);
         }
 
         return offspring;
     },
 
     // mutates a gene
-    mutate: function(gene) {
-        if (Math.random() < this.mutateRate) {
-            var mutateFactor = 1 + ((Math.random() - 0.5) * 3 + (Math.random() - 0.5));
+    mutate: function(gene, multiplier) {
+        if (Math.random() < this.mutateRate * multiplier) {
+            var mutateFactor = 1 + ((Math.random() - 0.5) * 2 + (Math.random() - 0.5) + (Math.random() - 0.5));
             gene *= mutateFactor;
         }
 

@@ -6,7 +6,7 @@ var gameWidth = 1920; // 1280
 var posChangeW = gameWidth - 1280;
 var gameHeight = 1080; // 720
 var posChangeH = gameHeight - 720 + 120;
-var gameSpeed = 2;
+var gameSpeed = 1;
 window.onload = function() {
     var game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, 'game');
 
@@ -68,7 +68,7 @@ App.Main.prototype = {
         this.game.physics.arcade.gravity.y = 2000;
 
         // create a new Genetic Algorithm with a population of 10 units which will be evolving by using 4 top units
-        this.GA = new GeneticAlgorithm(20, 4);
+        this.GA = new GeneticAlgorithm(20, 6);
 
         // create a BirdGroup which contains a number of Bird objects
         this.BirdGroup = this.game.add.group();
@@ -259,11 +259,12 @@ App.Main.prototype = {
                 var brain = this.GA.Population[bird.index].toJSON();
                 var scale = this.GA.SCALE_FACTOR * 0.02;
 
-                this.bmdStatus.rect(62, y, 9, -(50 - brain.neurons[0].activation / scale), "#000088"); // input 1
+                this.bmdStatus.rect(62, y, 9, -(brain.neurons[0].activation / scale), "#000088"); // input 1
                 this.bmdStatus.rect(90, y, 9, brain.neurons[1].activation / scale, "#000088"); // input 2
 
-                if (brain.neurons[brain.neurons.length - 1].activation < 0.5) this.bmdStatus.rect(118, y, 9, -20, "#880000"); // output: flap = no
-                else this.bmdStatus.rect(118, y, 9, -40, "#008800"); // output: flap = yes
+                //if (brain.neurons[brain.neurons.length - 1].activation < 0.5) this.bmdStatus.rect(118, y, 9, -20, "#880000"); // output: flap = no
+                //else this.bmdStatus.rect(118, y, 9, -40, "#008800"); // output: flap = yes
+                this.bmdStatus.rect(118, y, 9, -50 * brain.neurons[brain.neurons.length - 1].activation, brain.neurons[brain.neurons.length - 1].activation < 0.5 ? "#880000" : "#008800");
             }
 
             // draw bird's fitness and score
