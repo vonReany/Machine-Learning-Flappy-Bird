@@ -1,0 +1,29 @@
+{
+    "name": "ai-flappy-bird",
+    "version": "1.0.0",
+    "description": "Neural Networks and Genetic Algorithms are mixed up to play Flappy Bird.",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node app.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "a"
+    },
+    "keywords": [
+        "flappy",
+        "bird",
+        "ai",
+        "genetic",
+        "algorithms",
+        "neural",
+        "networks",
+        "phaser"
+    ],
+    "author": "enescnkr",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.16.3"
+    }
+}
