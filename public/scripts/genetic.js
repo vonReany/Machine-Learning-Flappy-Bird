@@ -22,7 +22,8 @@ GeneticAlgorithm.prototype = {
         this.best_population = 0; // the population number of the best unit
         this.best_fitness = 0; // the fitness of the best unit
         this.best_score = 0; // the score of the best unit ever
-        this.count = 0;
+        this.count = 0; // how many bird is created so far
+        this.cur_score = 0; // current score of alive birds
     },
 
     // creates a new population
@@ -64,6 +65,9 @@ GeneticAlgorithm.prototype = {
 
         // perform flap if output is greater than 0.5
         if (outputs[0] > 0.5) bird.flap();
+
+        // current score of birds
+        this.cur_score = bird.score_curr;
     },
 
     // evolves the population by performing selection, crossover and mutations on the units
@@ -146,16 +150,26 @@ GeneticAlgorithm.prototype = {
 
     // performs a single point crossover between two parents
     crossOver: function(parentA, parentB) {
-        // get a cross over cutting point
-        var cutPoint = this.random(0, parentA.neurons.length - 1);
+        // get a cross over cutting points
+        var cutPointBias = this.random(0, parentA.neurons.length - 1);
+        var cutPointConn = this.random(0, parentA.connections.length - 1);
 
-        // swap 'bias' information between both parents:
+        // Crossover rules:
         // 1. left side to the crossover point is copied from one parent
         // 2. right side after the crossover point is copied from the second parent
-        for (var i = cutPoint; i < parentA.neurons.length; i++) {
+
+        // swap 'bias' information between both parents:
+        for (var i = cutPointBias; i < parentA.neurons.length; i++) {
             var biasFromParentA = parentA.neurons[i]['bias'];
             parentA.neurons[i]['bias'] = parentB.neurons[i]['bias'];
             parentB.neurons[i]['bias'] = biasFromParentA;
+        }
+
+        // swap 'weight' information between both parents:
+        for (var i = cutPointConn; i < parentA.connections.length; i++) {
+            var biasFromParentA = parentA.connections[i]['weight'];
+            parentA.connections[i]['weight'] = parentB.connections[i]['weight'];
+            parentB.connections[i]['weight'] = biasFromParentA;
         }
 
         return this.random(0, 1) == 1 ? parentA : parentB;
@@ -168,7 +182,7 @@ GeneticAlgorithm.prototype = {
             offspring.neurons[i]['bias'] = this.mutate(offspring.neurons[i]['bias'], 1);
         }
 
-        // mutate some 'weights' information of the offspring connections
+        // mutate some 'weight' information of the offspring connections
         for (var i = 0; i < offspring.connections.length; i++) {
             offspring.connections[i]['weight'] = this.mutate(offspring.connections[i]['weight'], 2);
         }

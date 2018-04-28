@@ -2,11 +2,12 @@
 /* Creating Phaser Game
 /***********************************************************************************/
 
-var gameWidth = 1920; // 1280
+var gameSize = [1920, 1080]; // [1280, 720]
+var gameWidth = gameSize[0];
 var posChangeW = gameWidth - 1280;
-var gameHeight = 1080; // 720
+var gameHeight = gameSize[1];
 var posChangeH = gameHeight - 720 + 120;
-var gameSpeed = 1;
+var gameSpeed = 2.5;
 window.onload = function() {
     var game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, 'game');
 
@@ -55,17 +56,11 @@ App.Main.prototype = {
         this.scale.pageAlignVertically = true;
         this.scale.pageAlignHorizontally = true;
 
-        // set a blue color for the background of the stage
-        this.game.stage.backgroundColor = "#89bfdc";
+        this.game.stage.backgroundColor = "#89bfdc"; // set a blue color for the background of the stage
+        this.game.stage.disableVisibilityChange = true; // keep game running if it loses the focus
 
-        // keep game running if it loses the focus
-        this.game.stage.disableVisibilityChange = true;
-
-        // start the Phaser arcade physics engine
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
-
-        // set the gravity of the world
-        this.game.physics.arcade.gravity.y = 2000;
+        this.game.physics.startSystem(Phaser.Physics.ARCADE); // start the Phaser arcade physics engine
+        this.game.physics.arcade.gravity.y = 2000; // set the gravity of the world
 
         // create a new Genetic Algorithm with a population of 10 units which will be evolving by using 4 top units
         this.GA = new GeneticAlgorithm(20, 6);
@@ -92,11 +87,11 @@ App.Main.prototype = {
         this.Ground.autoScroll(-200 * gameSpeed, 0);
 
         // create a BitmapData image for drawing head-up display (HUD) on it
-        this.bmdStatus = this.game.make.bitmapData(370, this.game.height);
+        this.bmdStatus = this.game.make.bitmapData(420, this.game.height);
         this.bmdStatus.addToWorld(this.game.width - this.bmdStatus.width, 0);
 
         // create text objects displayed in the HUD header
-        new Text(this.game, posChangeW + 1047, 10, "In1  In2  Out", "right", "fnt_chars_black"); // Input 1 | Input 2 | Output
+        new Text(this.game, posChangeW + 1047, 10, "Hori.D. Vert.D.  Out", "right", "fnt_chars_black"); // Horizondal Distance | Vertical Distance | Output
         this.txtPopulationPrev = new Text(this.game, posChangeW + 1190, 10, "", "right", "fnt_chars_black"); // No. of the previous population
         this.txtPopulationCurr = new Text(this.game, posChangeW + 1270, 10, "", "right", "fnt_chars_black"); // No. of the current population
 
@@ -105,9 +100,13 @@ App.Main.prototype = {
         this.txtStatusPrevRed = []; // array of red text objects to show info of weak units from the previous population
         this.txtStatusCurr = []; // array of blue text objects to show info of all units from the current population
 
+        // create score text for information to top left
+        this.txtScore = new Text(this.game, 80, 20, "Score:", "right", "fnt_chars_black");
+        this.txtScore = new Text(this.game, 120, 20, "", "right", "fnt_chars_black");
+
+        // create bird information texts on HUD
         for (var i = 0; i < this.GA.max_units; i++) {
             var y = 46 + i * 50;
-
             new Text(this.game, posChangeW + 1110, y, "Fitness:\nScore:", "right", "fnt_chars_black")
             this.txtStatusPrevGreen.push(new Text(this.game, posChangeW + 1190, y, "", "right", "fnt_digits_green"));
             this.txtStatusPrevRed.push(new Text(this.game, posChangeW + 1190, y, "", "right", "fnt_digits_red"));
@@ -130,11 +129,8 @@ App.Main.prototype = {
         this.sprPause.anchor.setTo(0.5);
         this.sprPause.kill();
 
-        // add an input listener that can help us return from being paused
-        this.game.input.onDown.add(this.onResumeClick, this);
-
-        // set initial App state
-        this.state = this.STATE_INIT;
+        this.game.input.onDown.add(this.onResumeClick, this); // add an input listener that can help us return from being paused
+        this.state = this.STATE_INIT; // set initial App state
     },
 
     update: function() {
@@ -259,13 +255,16 @@ App.Main.prototype = {
                 var brain = this.GA.Population[bird.index].toJSON();
                 var scale = this.GA.SCALE_FACTOR * 0.02;
 
-                this.bmdStatus.rect(62, y, 9, -(brain.neurons[0].activation / scale), "#000088"); // input 1
-                this.bmdStatus.rect(90, y, 9, brain.neurons[1].activation / scale, "#000088"); // input 2
+                this.bmdStatus.rect(72, y, 9, -(brain.neurons[0].activation / scale), "#000088"); // input 1
+                this.bmdStatus.rect(120, y, 9, brain.neurons[1].activation / scale, "#000088"); // input 2
 
                 //if (brain.neurons[brain.neurons.length - 1].activation < 0.5) this.bmdStatus.rect(118, y, 9, -20, "#880000"); // output: flap = no
                 //else this.bmdStatus.rect(118, y, 9, -40, "#008800"); // output: flap = yes
-                this.bmdStatus.rect(118, y, 9, -50 * brain.neurons[brain.neurons.length - 1].activation, brain.neurons[brain.neurons.length - 1].activation < 0.5 ? "#880000" : "#008800");
+                this.bmdStatus.rect(165, y, 9, -50 * brain.neurons[brain.neurons.length - 1].activation, brain.neurons[brain.neurons.length - 1].activation < 0.5 ? "#880000" : "#008800");
             }
+
+            // printing current score
+            this.txtScore.setText(String(this.GA.cur_score));
 
             // draw bird's fitness and score
             this.txtStatusCurr[bird.index].setText(bird.fitness_curr.toFixed(2) + "\n" + bird.score_curr);
