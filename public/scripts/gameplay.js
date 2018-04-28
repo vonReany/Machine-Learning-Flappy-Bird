@@ -16,7 +16,7 @@ window.onload = function() {
 };
 
 /***********************************************************************************
-/* Main program
+/* Main Game Program
 /***********************************************************************************/
 
 var App = {};
@@ -255,18 +255,13 @@ App.Main.prototype = {
                 var brain = this.GA.Population[bird.index].toJSON();
                 var scale = this.GA.SCALE_FACTOR * 0.02;
 
-                this.bmdStatus.rect(72, y, 9, -(brain.neurons[0].activation / scale), "#000088"); // input 1
-                this.bmdStatus.rect(120, y, 9, brain.neurons[1].activation / scale, "#000088"); // input 2
+                this.bmdStatus.rect(72, y, 9, -(brain.neurons[0].activation / scale), "#000088"); // input 1 - horizontal distance
+                this.bmdStatus.rect(120, y, 9, brain.neurons[1].activation / scale, "#000088"); // input 2 - vertical distance
 
-                //if (brain.neurons[brain.neurons.length - 1].activation < 0.5) this.bmdStatus.rect(118, y, 9, -20, "#880000"); // output: flap = no
-                //else this.bmdStatus.rect(118, y, 9, -40, "#008800"); // output: flap = yes
                 this.bmdStatus.rect(165, y, 9, -50 * brain.neurons[brain.neurons.length - 1].activation, brain.neurons[brain.neurons.length - 1].activation < 0.5 ? "#880000" : "#008800");
             }
 
-            // printing current score
             this.txtScore.setText(String(this.GA.cur_score));
-
-            // draw bird's fitness and score
             this.txtStatusCurr[bird.index].setText(bird.fitness_curr.toFixed(2) + "\n" + bird.score_curr);
         }, this);
     },
