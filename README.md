@@ -1,3 +1,8 @@
+# Neural Networks and Genetic Algorithm combination to play Flappy Bird
+
+[Main repository can be found here.](https://github.com/ssusnic/Machine-Learning-Flappy-Bird) 
+
+
 # Machine Learning for Flappy Bird using Neural Network and Genetic Algorithm
 
 Here is the source code for a HTML5 project that implements a machine learning algorithm in the Flappy Bird video game using neural networks and a genetic algorithm. The program teaches a little bird how to flap optimally in order to fly safely through barriers as long as possible.

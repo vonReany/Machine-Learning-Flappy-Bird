@@ -14,7 +14,7 @@ var GeneticAlgorithm = function(max_units, top_units) {
 GeneticAlgorithm.prototype = {
     reset: function() {
         this.iteration = 1;
-        this.mutateRate = 0.2;
+        this.mutateRate = 0.05;
 
         this.best_population = 0;
         this.best_fitness = 0;
@@ -26,13 +26,13 @@ GeneticAlgorithm.prototype = {
     createPopulation: function() {
         this.Population = [];
         for (var i = 0; i < this.max_units; i++) {
-            this.Population.push(this.createNewUnit());
+            this.Population.push(this.createNewUnit(i));
         }
     },
 
-    createNewUnit: function() {
+    createNewUnit: function(index) {
         var newUnit = new synaptic.Architect.Perceptron(2, 6, 1);
-        newUnit.index = i;
+        newUnit.index = index;
         newUnit.fitness = 0;
         newUnit.score = 0;
         newUnit.isWinner = false; // shows if it is survived from last generation
@@ -64,8 +64,8 @@ GeneticAlgorithm.prototype = {
                 parentA = Winners[0].toJSON();
                 parentB = Winners[1].toJSON();
                 offspring = this.crossOver(parentA, parentB);
-            } else if (i >= this.max_units - 2) {
-                offspring = this.createNewUnit();
+            } else if (i >= this.max_units - 3) {
+                offspring = this.createNewUnit(i).toJSON();
             } else {
                 parentA = this.getRandomUnit(Winners).toJSON();
                 parentB = this.getRandomUnit(Winners).toJSON();
@@ -180,7 +180,5 @@ GeneticAlgorithm.prototype = {
         a.href = URL.createObjectURL(file);
         a.download = fileName;
         a.click();
-        console.log("DOWNLOADED");
-        console.log(c = content);
     }
 };
